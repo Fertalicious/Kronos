@@ -46,7 +46,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/editText"
+                    android:id="@+id/titleEditText"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:layout_toEndOf="@+id/textView"
@@ -98,7 +98,7 @@
                 <Switch
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/switch1"
+                    android:id="@+id/switchTime"
                     android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
@@ -155,7 +155,7 @@
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/checkBox"
+                    android:id="@+id/repeatCheckBox"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
@@ -186,7 +186,7 @@
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/checkBox2"
+                    android:id="@+id/favoriteCheckBox"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"

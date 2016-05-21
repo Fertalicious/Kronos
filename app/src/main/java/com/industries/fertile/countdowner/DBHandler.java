@@ -1,3 +1,5 @@
+package com.industries.fertile.countdowner;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -22,8 +24,7 @@ public class DBHandler extends SQLiteOpenHelper {
     // Dates Table Columns names
     private static final String KEY_ID = "ID";
     private static final String KEY_TITLE = "TITLE";
-    private static final String KEY_DATE = "DATE";
-    private static final String KEY_TIME = "TIME";
+    private static final String KEY_DATETIME = "DATETIME";
     private static final String KEY_REPEAT = "REPEAT";
     private static final String KEY_FAVORITE = "FAVORITE";
     private static final String KEY_BACKGROUND = "BACKGROUND";
@@ -37,8 +38,7 @@ public class DBHandler extends SQLiteOpenHelper {
         String CREATE_DATES_TABLE = "CREATE TABLE " + TABLE_DATES + "("
                 + KEY_ID + " INTEGER PRIMARY KEY,"
                 + KEY_TITLE + " TEXT,"
-                + KEY_DATE + " TEXT,"
-                + KEY_TIME + " TEXT,"
+                + KEY_DATETIME + " TEXT,"
                 + KEY_REPEAT + " INTEGER,"
                 + KEY_FAVORITE + " INTEGER,"
                 + KEY_BACKGROUND + " TEXT"
@@ -59,8 +59,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(KEY_TITLE, date.getTitle());
-        values.put(KEY_DATE, date.getDate());
-        values.put(KEY_TIME, date.getTime());
+        values.put(KEY_DATETIME, date.getDateTime());
         values.put(KEY_REPEAT, date.getRepeat());
         values.put(KEY_FAVORITE, date.getFavorite());
         values.put(KEY_BACKGROUND, date.getBackground());
@@ -75,13 +74,13 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_DATES, new String[]{KEY_ID,
-                        KEY_TITLE, KEY_DATE, KEY_TIME, KEY_REPEAT, KEY_FAVORITE, KEY_BACKGROUND}, KEY_ID + "=?",
+                        KEY_TITLE, KEY_DATETIME, KEY_REPEAT, KEY_FAVORITE, KEY_BACKGROUND}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
         CountdownDate date = new CountdownDate(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), cursor.getString(2), cursor.getString(3), Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), cursor.getString(6));
+                cursor.getString(1), cursor.getString(2), Integer.parseInt(cursor.getString(3)), Integer.parseInt(cursor.getString(4)), cursor.getString(5));
         // return date
         return date;
     }
@@ -100,11 +99,10 @@ public class DBHandler extends SQLiteOpenHelper {
                 CountdownDate date = new CountdownDate();
                 date.setId(Integer.parseInt(cursor.getString(0)));
                 date.setTitle(cursor.getString(1));
-                date.setDate(cursor.getString(2));
-                date.setTime(cursor.getString(3));
-                date.setRepeat(Integer.parseInt(cursor.getString(4)));
-                date.setFavorite(Integer.parseInt(cursor.getString(5)));
-                date.setBackground(cursor.getString(6));
+                date.setDateTime(cursor.getString(2));
+                date.setRepeat(Integer.parseInt(cursor.getString(3)));
+                date.setFavorite(Integer.parseInt(cursor.getString(4)));
+                date.setBackground(cursor.getString(5));
 
                 // Adding dates to list
                 datesList.add(date);
@@ -131,8 +129,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(KEY_TITLE, date.getTitle());
-        values.put(KEY_DATE, date.getDate());
-        values.put(KEY_TIME, date.getTime());
+        values.put(KEY_DATETIME, date.getDateTime());
         values.put(KEY_REPEAT, date.getRepeat());
         values.put(KEY_FAVORITE, date.getFavorite());
         values.put(KEY_BACKGROUND, date.getBackground());

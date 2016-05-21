@@ -1,11 +1,12 @@
+package com.industries.fertile.countdowner;
+
 /**
  * Created by Kyle on 5/17/2016.
  */
 public class CountdownDate {
     private int id;
     private String title;
-    private String date;
-    private String time;
+    private String dateTime;
     private int repeat;
     private int favorite;
     private String background;
@@ -15,11 +16,10 @@ public class CountdownDate {
 
     }
 
-    public CountdownDate(int id, String title, String date, String time, int repeat, int favorite, String background) {
+    public CountdownDate(int id, String title, String date, int repeat, int favorite, String background) {
         this.id = id;
         this.title = title;
-        this.date = date;
-        this.time = time;
+        this.dateTime = date;
         this.repeat = repeat;
         this.favorite = favorite;
         this.background = background;
@@ -41,20 +41,12 @@ public class CountdownDate {
         this.title = title;
     }
 
-    public String getTime() {
-        return time;
+    public String getDateTime() {
+        return dateTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
+    public void setDateTime(String date) {
+        this.dateTime = date;
     }
 
     public int getRepeat() {
