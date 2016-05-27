@@ -28,6 +28,8 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String KEY_REPEAT = "REPEAT";
     private static final String KEY_FAVORITE = "FAVORITE";
     private static final String KEY_BACKGROUND = "BACKGROUND";
+    private static final String KEY_TIME = "TIME";
+
 
     public DBHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,12 +43,21 @@ public class DBHandler extends SQLiteOpenHelper {
                 + KEY_DATETIME + " TEXT,"
                 + KEY_REPEAT + " INTEGER,"
                 + KEY_FAVORITE + " INTEGER,"
-                + KEY_BACKGROUND + " TEXT"
+                + KEY_BACKGROUND + " TEXT,"
+                + KEY_TIME + " INTEGER"
                 + ")";
         db.execSQL(CREATE_DATES_TABLE);
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Drop older table if existed
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DATES);
+        // Creating tables again
+        onCreate(db);
+    }
+
+    public void reCreateTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DATES);
         // Creating tables again
@@ -63,27 +74,29 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(KEY_REPEAT, date.getRepeat());
         values.put(KEY_FAVORITE, date.getFavorite());
         values.put(KEY_BACKGROUND, date.getBackground());
+        values.put(KEY_TIME, date.getTime());
 
         // Inserting Row
         db.insert(TABLE_DATES, null, values);
         db.close(); // Closing database connection
     }
 
-    // Getting one shop
+    // Getting one date
     public CountdownDate getCountdownDate(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_DATES, new String[]{KEY_ID,
-                        KEY_TITLE, KEY_DATETIME, KEY_REPEAT, KEY_FAVORITE, KEY_BACKGROUND}, KEY_ID + "=?",
+                        KEY_TITLE, KEY_DATETIME, KEY_REPEAT, KEY_FAVORITE, KEY_BACKGROUND, KEY_TIME}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
         CountdownDate date = new CountdownDate(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), cursor.getString(2), Integer.parseInt(cursor.getString(3)), Integer.parseInt(cursor.getString(4)), cursor.getString(5));
+                cursor.getString(1), cursor.getString(2), Integer.parseInt(cursor.getString(3)), Integer.parseInt(cursor.getString(4)), cursor.getString(5), Integer.parseInt(cursor.getString(6)));
         // return date
         return date;
     }
+
     // Getting All Dates
     public List<CountdownDate> getAllDates() {
         List<CountdownDate> datesList = new ArrayList<CountdownDate>();
@@ -103,6 +116,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 date.setRepeat(Integer.parseInt(cursor.getString(3)));
                 date.setFavorite(Integer.parseInt(cursor.getString(4)));
                 date.setBackground(cursor.getString(5));
+                date.setTime(Integer.parseInt(cursor.getString(6)));
 
                 // Adding dates to list
                 datesList.add(date);
@@ -133,6 +147,7 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(KEY_REPEAT, date.getRepeat());
         values.put(KEY_FAVORITE, date.getFavorite());
         values.put(KEY_BACKGROUND, date.getBackground());
+        values.put(KEY_TIME, date.getTime());
 
         // updating row
         return db.update(TABLE_DATES, values, KEY_ID + " = ?",

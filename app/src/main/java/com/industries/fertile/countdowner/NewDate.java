@@ -76,6 +76,7 @@ public class NewDate extends AppCompatActivity {
         String monthString = new DateFormatSymbols().getMonths()[month];
         dateTextView.setText(monthString + " " + day + ", " + year);
 
+        // Back button
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -142,6 +143,7 @@ public class NewDate extends AppCompatActivity {
                 String dateTime;
                 int repeat;
                 int favorite;
+                int timeChecked;
                 String background;
                 Date startDate;
 
@@ -154,11 +156,13 @@ public class NewDate extends AppCompatActivity {
                 date = dateTextView.getText().toString();
 
                 if(timeSwitch.isChecked()){
+                    timeChecked = 1;
                     time = timeTextView.getText().toString();
                     dateTime = date + " " + time;
                     DateTimeFormatter formatter = DateTimeFormat.forPattern("MMMM dd, yyyy hh:mm a");
                     dt = formatter.parseDateTime(dateTime);
                 }else{
+                    timeChecked = 0;
                     dateTime = date;
                     DateTimeFormatter formatter = DateTimeFormat.forPattern("MMMM dd, yyyy");
                     dt = formatter.parseDateTime(dateTime);
@@ -182,7 +186,7 @@ public class NewDate extends AppCompatActivity {
 
                 // Place each piece of info in database
                 DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss a");
-                db.addCountdownDate(new CountdownDate(0, title, fmt.print(dt), repeat, favorite, background));
+                db.addCountdownDate(new CountdownDate(0, title, fmt.print(dt), repeat, favorite, background, timeChecked));
 
                 Log.d("Reading: ", "Reading all dates...");
 
@@ -193,6 +197,9 @@ public class NewDate extends AppCompatActivity {
                             " , Repeat: " + aDate.getRepeat() + " , Favorite: " + aDate.getFavorite() + " , Background: " + aDate.getBackground();
                     Log.d("CountDown Date: : ", log);
                 }
+
+                Intent myIntent = new Intent(NewDate.this, MainActivity.class);
+                NewDate.this.startActivity(myIntent);
 
                 return true;
 

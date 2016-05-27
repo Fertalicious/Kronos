@@ -10,19 +10,21 @@ public class CountdownDate {
     private int repeat;
     private int favorite;
     private String background;
+    private int time;
 
     public CountdownDate()
     {
 
     }
 
-    public CountdownDate(int id, String title, String date, int repeat, int favorite, String background) {
+    public CountdownDate(int id, String title, String date, int repeat, int favorite, String background, int time) {
         this.id = id;
         this.title = title;
         this.dateTime = date;
         this.repeat = repeat;
         this.favorite = favorite;
         this.background = background;
+        this.time = time;
     }
 
     public int getId() {
@@ -71,5 +73,13 @@ public class CountdownDate {
 
     public void setBackground(String background) {
         this.background = background;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
     }
 }
