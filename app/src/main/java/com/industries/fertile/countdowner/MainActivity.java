@@ -230,7 +230,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             //dateTimeText.setText(PeriodFormat.getDefault().print(period));
             //String datetimeString = weeksBetween.getWeeks() + ":" + period.getDays() + ":" + period.getHours() + ":" + period.getMinutes() + ":" + period.getSeconds();
-            if (daysBetween.getDays() > 0 || daysBetween.getDays() < -1) {
+            if (weeksBetween.getWeeks() > 0){
+                if (weeksBetween.getWeeks() == 1 || weeksBetween.getWeeks() == -1)
+                    dateTimeText.setText("" + weeksBetween.getWeeks() + " week");
+                else
+                    dateTimeText.setText("" + weeksBetween.getWeeks() + " weeks");
+            }
+            else if (weeksBetween.getWeeks() == 0 ||daysBetween.getDays() < -1) {
                 if (daysBetween.getDays() == 1 || daysBetween.getDays() == -1)
                     dateTimeText.setText("" + daysBetween.getDays() + " day");
                 else

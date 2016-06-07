@@ -7,4 +7,10 @@
         android:title="@string/action_new"
         android:orderInCategory="200"
         app:showAsAction="always" />
+
+    <item android:id="@+id/action_precision"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="@string/action_new"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
 </menu>

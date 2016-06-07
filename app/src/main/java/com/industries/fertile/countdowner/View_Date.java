@@ -7,6 +7,7 @@ import android.provider.SyncStateContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -18,14 +19,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Hours;
 import org.joda.time.LocalDateTime;
+import org.joda.time.Minutes;
 import org.joda.time.Months;
 import org.joda.time.Period;
+import org.joda.time.Seconds;
 import org.joda.time.Weeks;
+import org.joda.time.Years;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormat;
@@ -48,6 +53,8 @@ public class View_Date extends AppCompatActivity {
     private Runnable runnable;
     Calendar rightNow;
     LocalDateTime localDateTime;
+    String currentFormatString;
+    int currentFormat;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +70,7 @@ public class View_Date extends AppCompatActivity {
         TextView dateTime = (TextView) findViewById(R.id.dateTimeTextView);
         countdown = (TextView) findViewById(R.id.countdownTextView);
 
-
+        currentFormat = 10;
 
         Bundle b = this.getIntent().getExtras();
         if (b != null) {
@@ -86,10 +93,6 @@ public class View_Date extends AppCompatActivity {
         String tdTextWithoutTime = formatter3.print(dt);
 
         period = new Period(calendarDateTime.toDateTime(), dt);
-        Hours hoursBetween = Hours.hoursBetween(calendarDateTime.toDateTime(), dt);
-        Days daysBetween = Days.daysBetween(calendarDateTime.toDateTime(), dt);
-        Weeks weeksBetween = Weeks.weeksBetween(calendarDateTime.toDateTime(), dt);
-        Months monthsBetween = Months.monthsBetween(calendarDateTime.toDateTime(), dt);
 
         // fill the view
         titleText.setText(theDate.getTitle());
@@ -102,7 +105,7 @@ public class View_Date extends AppCompatActivity {
 
         //countdown.setText(PeriodFormat.getDefault().print(period));
 
-        //String datetimeString = weeksBetween.getWeeks() + ":" + period.getDays() + ":" + period.getHours() + ":" + period.getMinutes() + ":" + period.getSeconds();
+        //String datetimeString = weeksBetween.getWeeks() + " weeks " + period.getDays() + " days " + period.getHours() + " hours " + period.getMinutes() + " minutes " + period.getSeconds() + " seconds";
         //countdown.setText(datetimeString);
 
         periodFormat = new PeriodFormatterBuilder()
@@ -128,13 +131,14 @@ public class View_Date extends AppCompatActivity {
                 .appendSuffix(" second", " seconds")
                 .toFormatter();
 
+        currentFormatString = periodFormat.print(period);
         handler = new Handler();
         runnable = new Runnable() {
             int test;
             @Override
             public void run() {
                 //update text every second
-                setCountdownText();
+                setCountdownText(currentFormatString);
                 Log.d("handler is working: : ", test++ + "");
                 handler.postDelayed(this, 1000);
             }
@@ -155,11 +159,10 @@ public class View_Date extends AppCompatActivity {
 
     protected void onResume(){
         super.onResume();
-        handler.postDelayed(runnable,1);
+        handler.postDelayed(runnable, 1);
     }
 
-    private void setCountdownText(){
-        String countdownOutput = periodFormat.print(period);
+    private void setCountdownText(String countdownOutput){
         textLimiter(countdownOutput);
         countdown.setText(ssb);
         ssb = new SpannableStringBuilder();
@@ -167,6 +170,30 @@ public class View_Date extends AppCompatActivity {
         calendarDateTime = localDateTime.fromCalendarFields(rightNow);
         period = new Period(calendarDateTime.toDateTime(), dt);
         localDateTime = new LocalDateTime();
+        if(currentFormat == 0){
+            Seconds secondsBetween = Seconds.secondsBetween(calendarDateTime.toDateTime(), dt);
+            currentFormatString = secondsBetween.getSeconds() + " seconds";
+        }else if(currentFormat == 1) {
+            Minutes minutesBetween = Minutes.minutesBetween(calendarDateTime.toDateTime(), dt);
+            currentFormatString = minutesBetween.getMinutes() + " minutes " + period.getSeconds() + " seconds";
+        }else if(currentFormat == 2){
+            Hours hoursBetween = Hours.hoursBetween(calendarDateTime.toDateTime(), dt);
+            currentFormatString = hoursBetween.getHours() + " hours " + period.getMinutes() + " minutes " + period.getSeconds() + " seconds";
+        }else if(currentFormat == 3){
+            Days daysBetween = Days.daysBetween(calendarDateTime.toDateTime(), dt);
+            currentFormatString = daysBetween.getDays() + " days " + period.getHours() + " hours " + period.getMinutes() + " minutes " + period.getSeconds() + " seconds";
+        }else if(currentFormat == 4){
+            Weeks weeksBetween = Weeks.weeksBetween(calendarDateTime.toDateTime(), dt);
+            currentFormatString = weeksBetween.getWeeks() + " weeks " + period.getDays() + " days " + period.getHours() + " hours " + period.getMinutes() + " minutes " + period.getSeconds() + " seconds";
+        }else if(currentFormat == 5){
+            Months monthsBetween = Months.monthsBetween(calendarDateTime.toDateTime(), dt);
+            currentFormatString = monthsBetween.getMonths() + " months " + period.getWeeks() + " weeks " + period.getDays() + " days " + period.getHours() + " hours " + period.getMinutes() + " minutes " + period.getSeconds() + " seconds";
+        }else if(currentFormat == 6){
+            Years yearsBetween = Years.yearsBetween(calendarDateTime.toDateTime(), dt);
+            currentFormatString = yearsBetween.getYears() + " years " + period.getMonths() + " months " + period.getWeeks() + " weeks " + period.getDays() + " days " + period.getHours() + " hours " + period.getMinutes() + " minutes " + period.getSeconds() + " seconds";
+        }else if(currentFormat == 10){
+            currentFormatString = periodFormat.print(period);
+        }
     }
 
     SpannableStringBuilder ssb = new SpannableStringBuilder();
@@ -217,7 +244,7 @@ public class View_Date extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_edit) {
-            // Pass the countdate object to editdate---------------------------------------------------------------------------------------
+            // Pass the countdate object to editdate
 
             Intent i = new Intent();
             Bundle bu = new Bundle();
@@ -229,14 +256,59 @@ public class View_Date extends AppCompatActivity {
             return true;
         }
 
-/*
-        if (id == R.id.action_new) {
-            Intent myIntent = new Intent(View_Date.this, NewDate.class);
-            View_Date.this.startActivity(myIntent);
-            return true;
+
+        if (id == R.id.action_precision) {
+            showFilterPopup(findViewById(R.id.action_precision));
         }
-*/
+
         return super.onOptionsItemSelected(item);
+    }
+
+    // Display anchored popup menu based on view selected
+    private void showFilterPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        // Inflate the menu from xml
+        popup.getMenuInflater().inflate(R.menu.popup_precision, popup.getMenu());
+        // Setup menu item selection
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_seconds:
+                        currentFormat = 0;
+                        Seconds secondsBetween = Seconds.secondsBetween(calendarDateTime.toDateTime(), dt);
+                        currentFormatString = secondsBetween.getSeconds() + " seconds";
+                        return true;
+                    case R.id.menu_minutes:
+                        currentFormat = 1;
+                        return true;
+                    case R.id.menu_hours:
+                        currentFormat = 2;
+                        return true;
+                    case R.id.menu_days:
+                        currentFormat = 3;
+                        return true;
+                    case R.id.menu_weeks:
+                        currentFormat = 4;
+                        Weeks weeksBetween = Weeks.weeksBetween(calendarDateTime.toDateTime(), dt);
+                        currentFormatString = weeksBetween.getWeeks() + " weeks " + period.getDays() + " days " + period.getHours() + " hours " + period.getMinutes() + " minutes " + period.getSeconds() + " seconds";
+                        return true;
+                    case R.id.menu_months:
+                        currentFormat = 5;
+                        return true;
+                    case R.id.menu_years:
+                        currentFormat = 6;
+                        return true;
+                    case R.id.menu_default:
+                        currentFormat = 10;
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+        // Handle dismissal with: popup.setOnDismissListener(...);
+        // Show the menu
+        popup.show();
     }
 
 }
