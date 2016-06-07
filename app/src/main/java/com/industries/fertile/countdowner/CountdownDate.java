@@ -1,9 +1,23 @@
 package com.industries.fertile.countdowner;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+import org.joda.time.Minutes;
+import org.joda.time.Seconds;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import java.io.Serializable;
+import java.util.Calendar;
+
 /**
  * Created by Kyle on 5/17/2016.
  */
-public class CountdownDate {
+public class CountdownDate implements Parcelable{
+
     private int id;
     private String title;
     private String dateTime;
@@ -81,5 +95,60 @@ public class CountdownDate {
 
     public void setTime(int time) {
         this.time = time;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(dateTime);
+        dest.writeInt(repeat);
+        dest.writeInt(favorite);
+        dest.writeString(background);
+        dest.writeInt(time);
+    }
+
+    public static final Parcelable.Creator<CountdownDate> CREATOR
+            = new Parcelable.Creator<CountdownDate>() {
+        public CountdownDate createFromParcel(Parcel in) {
+            CountdownDate date = new CountdownDate();
+            date.id = in.readInt();
+            date.title = in.readString();
+            date.dateTime = in.readString();
+            date.repeat = in.readInt();
+            date.favorite = in.readInt();
+            date.background = in.readString();
+            date.time = in.readInt();
+            return date;
+        }
+
+        public CountdownDate[] newArray(int size) {
+            return new CountdownDate[size];
+        }
+    };
+
+    public int compareTo(CountdownDate dateToCompare){
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss a");
+        DateTime thisDateTime = formatter.parseDateTime(this.getDateTime());
+        DateTime dateToCompareDateTime = formatter.parseDateTime(dateToCompare.getDateTime());
+        LocalDateTime localDateTime = new LocalDateTime();
+        Calendar rightNow = Calendar.getInstance();
+        LocalDateTime calendarDateTime = localDateTime.fromCalendarFields(rightNow);
+
+        Seconds secondsBetweenThisDate = Seconds.secondsBetween(calendarDateTime.toDateTime(), thisDateTime);
+        Seconds secondsBetweenDateToCompare = Seconds.secondsBetween(calendarDateTime.toDateTime(), dateToCompareDateTime);
+
+        if (secondsBetweenThisDate.isGreaterThan(secondsBetweenDateToCompare)){
+            return 1;
+        } else if (secondsBetweenThisDate.isLessThan(secondsBetweenDateToCompare)){
+            return -1;
+        } else {
+            return 0;
+        }
     }
 }

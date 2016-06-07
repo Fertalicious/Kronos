@@ -1,19 +1,38 @@
 package com.industries.fertile.countdowner;
 
+import android.app.ActionBar;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -22,6 +41,7 @@ import org.joda.time.Hours;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.joda.time.Minutes;
 import org.joda.time.Months;
 import org.joda.time.Period;
 import org.joda.time.Weeks;
@@ -31,15 +51,24 @@ import org.joda.time.format.PeriodFormat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private List<CountdownDate> myDates;
 
+    private PopupWindow popupWindow;
+    private Button cancelBtn;
+    private Button deleteBtn;
+
+    RelativeLayout mainLayout;
+
     DBHandler db;
-    ListView dateList;
+    SwipeMenuListView dateList;
     Calendar rightNow;
+
+    CountdownDate dateToDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,33 +77,42 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        dateList = (ListView) findViewById(R.id.dateListView);
+        mainLayout = new RelativeLayout(this);
+
+        dateList = (SwipeMenuListView) findViewById(R.id.listView);
+        dateList.setMenuCreator(creator);
+
         db = new DBHandler(this);
         myDates = db.getAllDates();
 
         rightNow = Calendar.getInstance();
         LocalDateTime localDateTime = new LocalDateTime();
-/*
-        DateTimeFormatter dateFormat = DateTimeFormat
-                .forPattern("G,C,Y,x,w,e,E,Y,D,M,d,a,K,h,H,k,m,s,S,z,Z");
-
-        LocalTime localTime = new LocalTime();
-        LocalDate localDate = new LocalDate();
-        DateTime dateTime = new DateTime();
-
-        DateTimeZone dateTimeZone = DateTimeZone.getDefault();
-
-        Log.d("dateFormater: : ", dateFormat.print(localDateTime));
-        Log.d("LocalTime: : ", localTime.toString());
-        Log.d("LocalDate : ", localDate.toString());
-        Log.d("dateTime: : ", dateTime.toString());
-        Log.d("localDateTime: : ", localDateTime.toString());
-        Log.d("dateTimeZone: : ", dateTimeZone.toString());
-*/
         LocalDateTime calendarDateTime = localDateTime.fromCalendarFields(rightNow);
         Log.d("calendarDateTime: : ", calendarDateTime.toString());
         Log.d("ToString: : ", calendarDateTime.toDateTime().toString());
         populateListView();
+        registerClickCallback();
+
+        dateList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                CountdownDate clickedDate = myDates.get(position);
+                switch (index) {
+                    case 0:
+                        // delete
+                        showPopupWindow(clickedDate);
+                        break;
+                    case 1:
+                        // possible expansion room
+                        break;
+                }
+                // false : close the menu; true : not close the menu
+                return false;
+            }
+        });
+
+        // Left
+        dateList.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
 
     }
 
@@ -108,8 +146,36 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onClick(View v) {
+
+        switch(v.getId()){
+
+            case R.id.btn_cancel:
+                if(popupWindow!=null & popupWindow.isShowing()){
+                    popupWindow.dismiss();
+                    popupWindow=null;
+                }
+                break;
+            case R.id.btn_delete:
+                db.deleteDate(dateToDelete);
+                popupWindow.dismiss();
+                popupWindow=null;
+                finish();
+                Intent myIntent = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(myIntent);
+                break;
+        }
+    }
+
     private void populateListView(){
         ArrayAdapter<CountdownDate> adapter = new MyListAdapter();
+        adapter.sort(new Comparator<CountdownDate>() {
+            @Override
+            public int compare(CountdownDate lhs, CountdownDate rhs) {
+                return lhs.compareTo(rhs);
+            }
+        });
         dateList.setAdapter(adapter);
     }
 
@@ -171,9 +237,16 @@ public class MainActivity extends AppCompatActivity {
                     dateTimeText.setText("" + daysBetween.getDays() + " days");
             }else {
                 if (hoursBetween.getHours() == 1 || hoursBetween.getHours() == -1)
-                    dateTimeText.setText(hoursBetween.getHours() + " hour");
-                else
-                    dateTimeText.setText(hoursBetween.getHours() + " hours");
+                    if(targetDate.getTime()==1)
+                        dateTimeText.setText(hoursBetween.getHours() + " hour");
+                    else
+                        dateTimeText.setText("today");
+                else {
+                    if (targetDate.getTime() == 1)
+                        dateTimeText.setText(hoursBetween.getHours() + " hours");
+                    else
+                        dateTimeText.setText("today");
+                }
             }
 
 /*
@@ -183,4 +256,72 @@ public class MainActivity extends AppCompatActivity {
             return itemView;
         }
     }
+
+
+    private void registerClickCallback(){
+        SwipeMenuListView list = (SwipeMenuListView) findViewById(R.id.listView);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View viewClicked, int position, long id) {
+
+                CountdownDate clickedDate = myDates.get(position);
+
+                Intent i = new Intent();
+                Bundle b = new Bundle();
+
+                b.putParcelable("COUNTDOWN_DATE", clickedDate);
+                i.putExtras(b);
+                i.setClass(MainActivity.this, View_Date.class);
+                startActivity(i);
+            }
+        });
+    }
+
+
+    SwipeMenuCreator creator = new SwipeMenuCreator() {
+
+        @Override
+        public void create(SwipeMenu menu) {
+            // create "delete" item
+            SwipeMenuItem deleteItem = new SwipeMenuItem(
+                    getApplicationContext());
+            // set item background
+            deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
+                    0x3F, 0x25)));
+            // set item width
+            deleteItem.setWidth((280));
+            // set a icon
+            deleteItem.setIcon(android.R.drawable.ic_menu_delete);
+            // add to menu
+            menu.addMenuItem(deleteItem);
+        }
+    };
+
+    private void showPopupWindow(CountdownDate date){
+        dateToDelete = date;
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.content_pop_up, null);
+        popupWindow = new PopupWindow(view, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, true);
+        popupWindow.setContentView(view);
+        TextView titleText = (TextView) view.findViewById(R.id.titleTextView);
+        titleText.setText("Delete the event " + date.getTitle() + "?");
+        cancelBtn = (Button) view.findViewById(R.id.btn_cancel);
+        cancelBtn.setOnClickListener(this);
+        deleteBtn = (Button) view.findViewById(R.id.btn_delete);
+        deleteBtn.setOnClickListener(this);
+        Drawable d = new ColorDrawable(Color.WHITE);
+        d.setAlpha(130);
+        //popupWindow.setBackgroundDrawable(new BitmapDrawable());
+        popupWindow.showAtLocation(mainLayout, Gravity.CENTER, 0, 0);
+        getWindow().setBackgroundDrawable(d);
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                Drawable d = new ColorDrawable(Color.WHITE);
+                getWindow().setBackgroundDrawable(d);
+            }
+        });
+
+    }
+
 }
