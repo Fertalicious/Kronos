@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 
 import java.sql.Date;
@@ -69,6 +70,7 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_ID, date.getId());
         values.put(KEY_TITLE, date.getTitle());
         values.put(KEY_DATETIME, date.getDateTime());
         values.put(KEY_REPEAT, date.getRepeat());
@@ -139,6 +141,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
     // Updating a date
     public int updateDate(CountdownDate date) {
+        Log.d("UPDATE FIRED", "update date fired");
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -158,7 +161,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public void deleteDate(CountdownDate date) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_DATES, KEY_ID + " = ?",
-                new String[] { String.valueOf(date.getId()) });
+                new String[]{String.valueOf(date.getId())});
         db.close();
     }
 }

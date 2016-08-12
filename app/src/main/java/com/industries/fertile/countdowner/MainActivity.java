@@ -1,12 +1,16 @@
 package com.industries.fertile.countdowner;
 
 import android.app.ActionBar;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.SyncStateContract;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +27,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -33,6 +39,8 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.google.android.gms.ads.MobileAds;
+import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -49,13 +57,18 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormat;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private MyListAdapter mAdapter;
     private List<CountdownDate> myDates;
 
     private PopupWindow popupWindow;
@@ -76,6 +89,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("Chronos");
+
+        // Add the ad
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-7455497383270639~1279190105");
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         mainLayout = new RelativeLayout(this);
 
@@ -114,6 +134,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Left
         dateList.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
 
+        mAdapter = new MyListAdapter();
+
+
+        final String MY_PREFS_NAME = "MyPrefsFile";
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        int adsOrNot = prefs.getInt("ads", 1); //0 is the default value.
+        if (adsOrNot == 0) {
+            LinearLayout adsContainer = (LinearLayout) findViewById(R.id.adsContainer);
+
+            View adMobAds = findViewById(R.id.adView);
+
+            adsContainer.removeView(adMobAds);
+        }
+
     }
 
     @Override
@@ -143,6 +177,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         }
 
+        if (id == R.id.action_refresh){
+            finish();
+            Intent myIntent = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(myIntent);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -159,6 +199,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_delete:
                 db.deleteDate(dateToDelete);
+                Intent itAlarm = new Intent("NOTIFICATION_SERVICE");
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(this,dateToDelete.getId(),itAlarm,0);
+                AlarmManager theAlarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+                theAlarm.cancel(pendingIntent);
+                if(dateToDelete.getFavorite() != 0){
+                    Intent earlyItAlarm = new Intent(dateToDelete.getId() + "earlyNot");
+                    PendingIntent earlyPendingIntent = PendingIntent.getBroadcast(this,dateToDelete.getId()+1,earlyItAlarm,0);
+                    AlarmManager earlyTheAlarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    earlyTheAlarm.cancel(earlyPendingIntent);
+                }
                 popupWindow.dismiss();
                 popupWindow=null;
                 finish();
@@ -179,9 +229,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dateList.setAdapter(adapter);
     }
 
+    private void reloadAllData(){
+        // get new modified random data
+        myDates = db.getAllDates();
+        // update data in our adapter
+        mAdapter.getData().clear();
+        mAdapter.getData().addAll(myDates);
+        // fire the event
+        mAdapter.notifyDataSetChanged();
+    }
+
     private class MyListAdapter extends ArrayAdapter<CountdownDate> {
         public MyListAdapter(){
             super(MainActivity.this, R.layout.item_view, myDates);
+        }
+
+        public List<CountdownDate> getData(){
+            return myDates;
         }
 
         @Override
@@ -195,6 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             TextView dateTimeText = (TextView) itemView.findViewById(R.id.dateTimeTextView);
             TextView titleText = (TextView) itemView.findViewById(R.id.titleTextView);
             TextView targetDateText = (TextView) itemView.findViewById(R.id.targetDateTextView);
+            ImageView dateImage = (ImageView) itemView.findViewById(R.id.dateIconImageView);
 
             // find the date to work with
             CountdownDate targetDate = myDates.get(position);
@@ -218,6 +283,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Days daysBetween = Days.daysBetween(calendarDateTime.toDateTime(), dt);
             Weeks weeksBetween = Weeks.weeksBetween(calendarDateTime.toDateTime(), dt);
             Months monthsBetween = Months.monthsBetween(calendarDateTime.toDateTime(), dt);
+            Minutes minutesBetween = Minutes.minutesBetween(calendarDateTime.toDateTime(), dt);
 
             // fill the view
             titleText.setText("" + targetDate.getTitle());
@@ -236,25 +302,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 else
                     dateTimeText.setText("" + weeksBetween.getWeeks() + " weeks");
             }
-            else if (weeksBetween.getWeeks() == 0 ||daysBetween.getDays() < -1) {
+            else if (weeksBetween.getWeeks() == 0 && daysBetween.getDays() > 0 || daysBetween.getDays() < -1) {
                 if (daysBetween.getDays() == 1 || daysBetween.getDays() == -1)
                     dateTimeText.setText("" + daysBetween.getDays() + " day");
                 else
                     dateTimeText.setText("" + daysBetween.getDays() + " days");
-            }else {
+            }else if(daysBetween.getDays() == 0 && hoursBetween.getHours() > 0 || hoursBetween.getHours() < -1){
                 if (hoursBetween.getHours() == 1 || hoursBetween.getHours() == -1)
-                    if(targetDate.getTime()==1)
-                        dateTimeText.setText(hoursBetween.getHours() + " hour");
-                    else
-                        dateTimeText.setText("today");
+                    dateTimeText.setText(hoursBetween.getHours() + " hour");
                 else {
-                    if (targetDate.getTime() == 1)
-                        dateTimeText.setText(hoursBetween.getHours() + " hours");
-                    else
-                        dateTimeText.setText("today");
+                    dateTimeText.setText(hoursBetween.getHours() + " hours");
+                }
+            }else{
+                if (minutesBetween.getMinutes() == 1 || minutesBetween.getMinutes() == -1)
+                    dateTimeText.setText(minutesBetween.getMinutes() + " minute");
+                else {
+                    dateTimeText.setText(minutesBetween.getMinutes() + " minutes");
                 }
             }
 
+            if(targetDate.getBackground() != null){
+                Uri uri = Uri.fromFile(new File(targetDate.getBackground()));
+                Picasso.with(MainActivity.this)
+                        .load(uri)
+                        .fit()
+                        .into(dateImage);
+            }
 /*
             String log = localDateTime.toString();
             Log.d("local date time: : ", log);

@@ -8,9 +8,23 @@
         android:orderInCategory="200"
         app:showAsAction="always" />
 
+    <item android:id="@+id/action_delete"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/action_new"
+        android:orderInCategory="150"
+        app:showAsAction="always" />
+
     <item android:id="@+id/action_precision"
         android:icon="@android:drawable/ic_menu_sort_by_size"
         android:title="@string/action_new"
         android:orderInCategory="100"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_share"
+        android:icon="@android:drawable/ic_menu_share"
+        app:showAsAction="always"
+        android:title="Share"
+        android:actionProviderClass=
+            "android.widget.ShareActionProvider" />
 </menu>

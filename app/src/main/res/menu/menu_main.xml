@@ -8,8 +8,14 @@
         app:showAsAction="always" />
 
     <item android:id="@+id/action_new"
-        android:icon="@android:drawable/ic_input_add"
+    android:icon="@android:drawable/ic_input_add"
+    android:title="@string/action_new"
+    android:orderInCategory="100"
+    app:showAsAction="always" />
+
+    <item android:id="@+id/action_refresh"
+        android:icon="@android:drawable/ic_menu_rotate"
         android:title="@string/action_new"
-        android:orderInCategory="100"
+        android:orderInCategory="150"
         app:showAsAction="always" />
 </menu>

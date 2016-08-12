@@ -1,11 +1,96 @@
 <resources>
-    <string name="app_name">Countdowner</string>
+    <string name="app_name">Chronos Countdown</string>
     <string name="action_settings">Settings</string>
     <string name="action_new">Create Event</string>
     <string name="title_activity_create">Create Event</string>
     <string name="title_activity_new_date">New Event</string>
     <string name="title_activity_settings">Settings</string>
     <string name="titleText">Title:       </string>
-    <string name="title_activity_view__date">View Date</string>
+    <string name="title_activity_view__date">View</string>
     <string name="title_activity_edit_date">Edit Date</string>
+    <string name="title_activity_select_background">Select Background</string>
+    <string-array name="repeat_array">
+        <item>No</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Yearly</item>
+    </string-array>
+    <string-array name="early_array">
+        <item>No</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+    </string-array>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string-array name="background_resources">
+        <item>http://imgur.com/MX9FmCI.jpg</item>
+        <item>http://imgur.com/V2LIvRR.jpg</item>
+        <item>http://imgur.com/PigSR13.jpg</item>
+        <item>http://imgur.com/rrUh88J.jpg</item>
+        <item>http://imgur.com/HqJaCx6.jpg</item>
+        <item>http://imgur.com/VoSQkMf.jpg</item>
+        <item>http://imgur.com/XgknMgJ.jpg</item>
+        <item>http://imgur.com/ZbylHQ8.jpg</item>
+        <item>http://imgur.com/RXMHJhK.jpg</item>
+        <item>http://imgur.com/vfjsC57.jpg</item>
+        <item>http://imgur.com/JijlErs.jpg</item>
+        <item>http://imgur.com/uxmVWbU.jpg</item>
+        <item>http://imgur.com/Yung3l5.jpg</item>
+        <item>http://imgur.com/sLyXFh4.jpg</item>
+        <item>http://imgur.com/EORGK2H.jpg</item>
+        <item>http://imgur.com/QMSmpf1.jpg</item>
+        <item>http://imgur.com/JoXPZPl.jpg</item>
+        <item>http://imgur.com/EJZQqEa.jpg</item>
+        <item>http://imgur.com/QIzSUbj.jpg</item>
+        <item>http://imgur.com/Y6gaSzP.jpg</item>
+    </string-array>
+
+    <string-array name="background_resources_optimized">
+        <item>http://imgur.com/fF9wfva.jpg</item>
+        <item>http://imgur.com/2aaK0YV.jpg</item>
+        <item>http://imgur.com/VGydQ1W.jpg</item>
+        <item>http://imgur.com/J6zfqSC.jpg</item>
+        <item>http://imgur.com/beScGh8.jpg</item>
+        <item>http://imgur.com/KfNePLf.jpg</item>
+        <item>http://imgur.com/VCQReeR.jpg</item>
+        <item>http://imgur.com/gALGzWJ.jpg</item>
+        <item>http://imgur.com/C0yJkMR.jpg</item>
+        <item>http://imgur.com/aY1Uurq.jpg</item>
+        <item>http://imgur.com/Q6KGBF0.jpg</item>
+        <item>http://imgur.com/RIOb971.jpg</item>
+        <item>http://imgur.com/YIIGxBK.jpg</item>
+        <item>http://imgur.com/uuWDJbR.jpg</item>
+        <item>http://imgur.com/B4ERGeM.jpg</item>
+        <item>http://imgur.com/4qjrbq5.jpg</item>
+        <item>http://imgur.com/cqJS7fT.jpg</item>
+        <item>http://imgur.com/6K9Y9hy.jpg</item>
+        <item>http://imgur.com/oQ5SO6O.jpg</item>
+        <item>http://imgur.com/DOp7xko.jpg</item>
+        <item>http://imgur.com/1H8hsQx.jpg</item>
+        <item>http://imgur.com/gcCV4ou.jpg</item>
+        <item>http://imgur.com/mfr9sky.jpg</item>
+        <item>http://imgur.com/MeQVMqD.jpg</item>
+        <item>http://imgur.com/qVmszr6.jpg</item>
+        <item>http://imgur.com/nUgIzJk.jpg</item>
+    </string-array>
+
+
+    <string name="banner_ad_unit_id">ca-app-pub-7455497383270639/4232656500</string>
+
+    <string name="icon">Icon from:\n <a href="https://icons8.com/">https://icons8.com/</a>\n</string>
+    <string name="picasso">Picasso:\n <a href="http://square.github.io/picasso/">http://square.github.io/picasso/</a>\n</string>
+    <string name="swipe">Swipe Menu:\n <a href="https://github.com/baoyongzhang/SwipeMenuListView">https://github.com/baoyongzhang/SwipeMenuListView</a>\n</string>
 </resources>

@@ -27,14 +27,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
+            android:text="Select image source"
             android:id="@+id/titleTextView"
             android:layout_margin="10dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right" >
+            android:gravity="center_horizontal">
 
             <Button
                 android:id="@+id/btn_cancel"
@@ -43,16 +43,27 @@
                 android:layout_height="wrap_content"
                 android:text="Cancel"
                 android:layout_margin="10dp"
-                />
+                android:textSize="12dp" />
 
             <Button
-                android:id="@+id/btn_delete"
+                android:id="@+id/btn_gallery"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right|center_vertical"
-                android:text="Delete"
-                android:layout_margin="10dp" />
+                android:text="Gallery"
+                android:layout_margin="10dp"
+                android:textSize="12dp" />
+
+            <Button
+                android:id="@+id/btn_online"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical"
+                android:text="Online"
+                android:layout_margin="0dp"
+                android:textSize="12dp" />
         </LinearLayout>
     </LinearLayout>
 
